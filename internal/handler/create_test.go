@@ -17,7 +17,7 @@ import (
 func TestCreateHandler_Success(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	handler := NewCreateHandler(svc)
+	router := NewRouter(svc)
 
 	req, err := http.NewRequest("POST", "/", strings.NewReader("https://yandex.ru"))
 	require.NoError(t, err)
@@ -25,7 +25,7 @@ func TestCreateHandler_Success(t *testing.T) {
 	req.Host = "localhost:8080"
 
 	w := httptest.NewRecorder()
-	handler.ServeHTTP(w, req)
+	router.ServeHTTP(w, req)
 
 	resp := w.Result()
 	defer resp.Body.Close()
@@ -43,14 +43,14 @@ func TestCreateHandler_Success(t *testing.T) {
 func TestCreateHandler_InvalidContentType(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	handler := NewCreateHandler(svc)
+	router := NewRouter(svc)
 
 	req, err := http.NewRequest("POST", "/", strings.NewReader("https://yandex.ru"))
 	require.NoError(t, err)
 	req.Header.Set("Content-Type", "application/json")
 
 	w := httptest.NewRecorder()
-	handler.ServeHTTP(w, req)
+	router.ServeHTTP(w, req)
 
 	resp := w.Result()
 	defer resp.Body.Close()
@@ -95,14 +95,14 @@ func TestCreateHandler_InvalidURL(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			repo := memory.New()
 			svc := shortener.New(repo)
-			handler := NewCreateHandler(svc)
+			router := NewRouter(svc)
 
 			req, err := http.NewRequest("POST", "/", strings.NewReader(tc.body))
 			require.NoError(t, err)
 			req.Header.Set("Content-Type", "text/plain")
 
 			w := httptest.NewRecorder()
-			handler.ServeHTTP(w, req)
+			router.ServeHTTP(w, req)
 
 			resp := w.Result()
 			defer resp.Body.Close()
@@ -119,7 +119,7 @@ func TestCreateHandler_InvalidURL(t *testing.T) {
 func TestCreateHandler_LargeBody(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	handler := NewCreateHandler(svc)
+	router := NewRouter(svc)
 
 	largeBody := bytes.NewBuffer(make([]byte, 10240))
 	largeBody.WriteString("https://yandex.ru")
@@ -129,7 +129,7 @@ func TestCreateHandler_LargeBody(t *testing.T) {
 	req.Header.Set("Content-Type", "text/plain")
 
 	w := httptest.NewRecorder()
-	handler.ServeHTTP(w, req)
+	router.ServeHTTP(w, req)
 
 	resp := w.Result()
 	defer resp.Body.Close()
@@ -140,14 +140,14 @@ func TestCreateHandler_LargeBody(t *testing.T) {
 func TestCreateHandler_EmptyHost(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	handler := NewCreateHandler(svc)
+	router := NewRouter(svc)
 
 	req, err := http.NewRequest("POST", "/", strings.NewReader("https://yandex.ru"))
 	require.NoError(t, err)
 	req.Header.Set("Content-Type", "text/plain")
 
 	w := httptest.NewRecorder()
-	handler.ServeHTTP(w, req)
+	router.ServeHTTP(w, req)
 
 	resp := w.Result()
 	defer resp.Body.Close()
@@ -163,7 +163,7 @@ func TestCreateHandler_EmptyHost(t *testing.T) {
 func TestCreateHandler_MultipleURLs(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	handler := NewCreateHandler(svc)
+	router := NewRouter(svc)
 
 	urls := []string{
 		"https://google.com",
@@ -178,7 +178,7 @@ func TestCreateHandler_MultipleURLs(t *testing.T) {
 		req.Host = "localhost:8080"
 
 		w := httptest.NewRecorder()
-		handler.ServeHTTP(w, req)
+		router.ServeHTTP(w, req)
 
 		resp := w.Result()
 		defer resp.Body.Close()

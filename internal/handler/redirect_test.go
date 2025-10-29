@@ -14,7 +14,7 @@ import (
 func TestRedirectHandler_Success(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	handler := NewRedirectHandler(svc)
+	router := NewRouter(svc)
 
 	originalURL := "https://yandex.ru"
 	id, err := svc.Shorten(originalURL)
@@ -24,7 +24,7 @@ func TestRedirectHandler_Success(t *testing.T) {
 	require.NoError(t, err)
 
 	w := httptest.NewRecorder()
-	handler.ServeHTTP(w, req)
+	router.ServeHTTP(w, req)
 
 	resp := w.Result()
 	defer resp.Body.Close()
@@ -36,13 +36,13 @@ func TestRedirectHandler_Success(t *testing.T) {
 func TestRedirectHandler_NotFound(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	handler := NewRedirectHandler(svc)
+	router := NewRouter(svc)
 
 	req, err := http.NewRequest("GET", "/nonexistent123", nil)
 	require.NoError(t, err)
 
 	w := httptest.NewRecorder()
-	handler.ServeHTTP(w, req)
+	router.ServeHTTP(w, req)
 
 	resp := w.Result()
 	defer resp.Body.Close()
@@ -53,7 +53,7 @@ func TestRedirectHandler_NotFound(t *testing.T) {
 func TestRedirectHandler_InvalidIDFormat(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	handler := NewRedirectHandler(svc)
+	router := NewRouter(svc)
 
 	testCases := []struct {
 		name   string
@@ -93,7 +93,7 @@ func TestRedirectHandler_InvalidIDFormat(t *testing.T) {
 			require.NoError(t, err)
 
 			w := httptest.NewRecorder()
-			handler.ServeHTTP(w, req)
+			router.ServeHTTP(w, req)
 
 			resp := w.Result()
 			defer resp.Body.Close()
@@ -106,13 +106,13 @@ func TestRedirectHandler_InvalidIDFormat(t *testing.T) {
 func TestRedirectHandler_ValidIDNoRedirect(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	handler := NewRedirectHandler(svc)
+	router := NewRouter(svc)
 
 	req, err := http.NewRequest("GET", "/AbCdEfG", nil)
 	require.NoError(t, err)
 
 	w := httptest.NewRecorder()
-	handler.ServeHTTP(w, req)
+	router.ServeHTTP(w, req)
 
 	resp := w.Result()
 	defer resp.Body.Close()
@@ -123,13 +123,13 @@ func TestRedirectHandler_ValidIDNoRedirect(t *testing.T) {
 func TestRedirectHandler_PathWithSlash(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	handler := NewRedirectHandler(svc)
+	router := NewRouter(svc)
 
 	req, err := http.NewRequest("GET", "/some/path", nil)
 	require.NoError(t, err)
 
 	w := httptest.NewRecorder()
-	handler.ServeHTTP(w, req)
+	router.ServeHTTP(w, req)
 
 	resp := w.Result()
 	defer resp.Body.Close()
@@ -140,7 +140,7 @@ func TestRedirectHandler_PathWithSlash(t *testing.T) {
 func TestRedirectHandler_MultipleRedirects(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	handler := NewRedirectHandler(svc)
+	router := NewRouter(svc)
 
 	urls := []string{
 		"https://google.com",
@@ -161,7 +161,7 @@ func TestRedirectHandler_MultipleRedirects(t *testing.T) {
 		require.NoError(t, err)
 
 		w := httptest.NewRecorder()
-		handler.ServeHTTP(w, req)
+		router.ServeHTTP(w, req)
 
 		resp := w.Result()
 		defer resp.Body.Close()
@@ -174,13 +174,13 @@ func TestRedirectHandler_MultipleRedirects(t *testing.T) {
 func TestRedirectHandler_WhitespaceInPath(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	handler := NewRedirectHandler(svc)
+	router := NewRouter(svc)
 
 	req, err := http.NewRequest("GET", "/  id  ", nil)
 	require.NoError(t, err)
 
 	w := httptest.NewRecorder()
-	handler.ServeHTTP(w, req)
+	router.ServeHTTP(w, req)
 
 	resp := w.Result()
 	defer resp.Body.Close()

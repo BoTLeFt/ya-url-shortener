@@ -9,7 +9,7 @@ import (
 )
 
 func NewRouter(svc *shortener.Service) http.Handler {
-	router := gin.New()
+	router := gin.Default()
 
 	router.NoRoute(func(c *gin.Context) {
 		c.String(http.StatusBadRequest, "bad request")
@@ -21,8 +21,8 @@ func NewRouter(svc *shortener.Service) http.Handler {
 	createHandler := NewCreateHandler(svc)
 	redirectHandler := NewRedirectHandler(svc)
 
-	router.POST("/", gin.WrapH(createHandler))
-	router.GET("/:id", gin.WrapH(redirectHandler))
+	router.POST("/", createHandler.Create)
+	router.GET("/:id", redirectHandler.Redirect)
 
 	return router
 }

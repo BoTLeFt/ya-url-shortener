@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/BoTLeFt/ya-url-shortener/internal/service/shortener"
+	"github.com/gin-gonic/gin"
 )
 
 const maxBodyBytes = 8 << 10 // 8 KiB
@@ -21,42 +22,45 @@ func NewCreateHandler(svc *shortener.Service) *CreateHandler {
 	return &CreateHandler{svc: svc}
 }
 
-func (h *CreateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if !isTextPlain(r.Header.Get("Content-Type")) {
-		fmt.Println(r.Header.Get("Content-Type"))
-		http.Error(w, "bad request", http.StatusBadRequest)
+func (h *CreateHandler) Create(c *gin.Context) {
+	if !isTextPlain(c.GetHeader("Content-Type")) {
+		c.String(http.StatusBadRequest, "bad request")
 		return
 	}
 
-	r.Body = http.MaxBytesReader(w, r.Body, maxBodyBytes)
-	defer r.Body.Close()
-	body, err := io.ReadAll(r.Body)
+	if c.Request == nil || c.Request.Body == nil {
+		c.String(http.StatusBadRequest, "bad request")
+		return
+	}
+	defer c.Request.Body.Close()
+
+	limited := io.LimitReader(c.Request.Body, maxBodyBytes)
+	body, err := io.ReadAll(limited)
 	if err != nil {
-		http.Error(w, "bad request", http.StatusBadRequest)
+		c.String(http.StatusBadRequest, "bad request")
 		return
 	}
 
 	raw := strings.TrimSpace(string(body))
 	if !isValidURL(raw) {
-		http.Error(w, "bad request", http.StatusBadRequest)
+		c.String(http.StatusBadRequest, "bad request")
 		return
 	}
 
 	id, err := h.svc.Shorten(raw)
 	if err != nil {
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		c.String(http.StatusInternalServerError, "internal error")
 		return
 	}
 
-	host := r.Host
+	host := c.Request.Host
 	if host == "" {
 		host = "localhost:8080"
 	}
 	shortURL := fmt.Sprintf("http://%s/%s", host, id)
 
-	w.Header().Set("Content-Type", "text/plain")
-	w.WriteHeader(http.StatusCreated)
-	_, _ = w.Write([]byte(shortURL))
+	c.Header("Content-Type", "text/plain")
+	c.String(http.StatusCreated, shortURL)
 }
 
 func isTextPlain(ct string) bool {

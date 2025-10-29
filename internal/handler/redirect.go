@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/BoTLeFt/ya-url-shortener/internal/service/shortener"
+	"github.com/gin-gonic/gin"
 )
 
 type RedirectHandler struct {
@@ -15,19 +16,19 @@ func NewRedirectHandler(svc *shortener.Service) *RedirectHandler {
 	return &RedirectHandler{svc: svc}
 }
 
-func (h *RedirectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	id := strings.TrimPrefix(r.URL.Path, "/")
-	if id == "" || strings.Contains(id, "/") || !isValidIDPath(id) {
-		http.Error(w, "bad request", http.StatusBadRequest)
+func (h *RedirectHandler) Redirect(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" || strings.Contains(id, "/") || !shortener.IsValidID(id) {
+		c.String(http.StatusBadRequest, "bad request")
 		return
 	}
 
 	orig, ok := h.svc.Resolve(id)
 	if !ok {
-		http.Error(w, "bad request", http.StatusBadRequest)
+		c.String(http.StatusBadRequest, "bad request")
 		return
 	}
 
-	w.Header().Set("Location", orig)
-	w.WriteHeader(http.StatusTemporaryRedirect)
+	c.Header("Location", orig)
+	c.Status(http.StatusTemporaryRedirect)
 }
