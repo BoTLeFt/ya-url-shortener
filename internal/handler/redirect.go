@@ -17,7 +17,7 @@ func NewRedirectHandler(svc *shortener.Service) *RedirectHandler {
 
 func (h *RedirectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/")
-	if id == "" || strings.Contains(id, "/") {
+	if id == "" || strings.Contains(id, "/") || !isValidIDPath(id) {
 		http.Error(w, "bad request", http.StatusBadRequest)
 		return
 	}
