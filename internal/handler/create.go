@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strings"
 
+	config "github.com/BoTLeFt/ya-url-shortener/internal/config/flags"
 	"github.com/BoTLeFt/ya-url-shortener/internal/service/shortener"
 	"github.com/gin-gonic/gin"
 )
@@ -16,10 +17,11 @@ const maxBodyBytes = 8 << 10 // 8 KiB
 
 type CreateHandler struct {
 	svc *shortener.Service
+	cfg *config.Config
 }
 
-func NewCreateHandler(svc *shortener.Service) *CreateHandler {
-	return &CreateHandler{svc: svc}
+func NewCreateHandler(svc *shortener.Service, cfg *config.Config) *CreateHandler {
+	return &CreateHandler{svc: svc, cfg: cfg}
 }
 
 func (h *CreateHandler) Create(c *gin.Context) {
@@ -53,11 +55,7 @@ func (h *CreateHandler) Create(c *gin.Context) {
 		return
 	}
 
-	host := c.Request.Host
-	if host == "" {
-		host = "localhost:8080"
-	}
-	shortURL := fmt.Sprintf("http://%s/%s", host, id)
+	shortURL := fmt.Sprintf("%s/%s", h.cfg.BaseURL, id)
 
 	c.Header("Content-Type", "text/plain")
 	c.String(http.StatusCreated, shortURL)

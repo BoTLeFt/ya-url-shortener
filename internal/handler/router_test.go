@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	config "github.com/BoTLeFt/ya-url-shortener/internal/config/flags"
 	"github.com/BoTLeFt/ya-url-shortener/internal/repository/memory"
 	"github.com/BoTLeFt/ya-url-shortener/internal/service/shortener"
 	"github.com/stretchr/testify/assert"
@@ -16,7 +17,9 @@ import (
 func TestRouter_PostCreate(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	req, err := http.NewRequest("POST", "/", strings.NewReader("https://yandex.ru"))
 	require.NoError(t, err)
@@ -34,7 +37,9 @@ func TestRouter_PostCreate(t *testing.T) {
 func TestRouter_GetRedirect(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	createReq, err := http.NewRequest("POST", "/", strings.NewReader("https://yandex.ru"))
 	require.NoError(t, err)
@@ -66,7 +71,9 @@ func TestRouter_GetRedirect(t *testing.T) {
 func TestRouter_InvalidMethod(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	testCases := []struct {
 		method string
@@ -102,7 +109,9 @@ func TestRouter_InvalidMethod(t *testing.T) {
 func TestRouter_InvalidPathForRedirect(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	testCases := []struct {
 		name string
@@ -133,7 +142,9 @@ func TestRouter_InvalidPathForRedirect(t *testing.T) {
 func TestRouter_ValidIDPath(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	createReq, err := http.NewRequest("POST", "/", strings.NewReader("https://yandex.ru"))
 	require.NoError(t, err)
@@ -187,7 +198,9 @@ func TestIsValidIDPath(t *testing.T) {
 func TestRouter_IntegrationFlow(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://yandex.ru"
+	router := NewRouter(svc, cfg)
 
 	originalURL := "https://yandex.ru/path?query=value"
 

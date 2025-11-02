@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	config "github.com/BoTLeFt/ya-url-shortener/internal/config/flags"
 	"github.com/BoTLeFt/ya-url-shortener/internal/repository/memory"
 	"github.com/BoTLeFt/ya-url-shortener/internal/service/shortener"
 	"github.com/stretchr/testify/assert"
@@ -17,7 +18,9 @@ import (
 func TestCreateHandler_Success(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	req, err := http.NewRequest("POST", "/", strings.NewReader("https://yandex.ru"))
 	require.NoError(t, err)
@@ -43,7 +46,9 @@ func TestCreateHandler_Success(t *testing.T) {
 func TestCreateHandler_InvalidContentType(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	req, err := http.NewRequest("POST", "/", strings.NewReader("https://yandex.ru"))
 	require.NoError(t, err)
@@ -95,7 +100,9 @@ func TestCreateHandler_InvalidURL(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			repo := memory.New()
 			svc := shortener.New(repo)
-			router := NewRouter(svc)
+			cfg := config.NewConfig()
+			cfg.BaseURL = "http://localhost:8080"
+			router := NewRouter(svc, cfg)
 
 			req, err := http.NewRequest("POST", "/", strings.NewReader(tc.body))
 			require.NoError(t, err)
@@ -119,7 +126,9 @@ func TestCreateHandler_InvalidURL(t *testing.T) {
 func TestCreateHandler_LargeBody(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	largeBody := bytes.NewBuffer(make([]byte, 10240))
 	largeBody.WriteString("https://yandex.ru")
@@ -140,7 +149,9 @@ func TestCreateHandler_LargeBody(t *testing.T) {
 func TestCreateHandler_EmptyHost(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	req, err := http.NewRequest("POST", "/", strings.NewReader("https://yandex.ru"))
 	require.NoError(t, err)
@@ -163,7 +174,9 @@ func TestCreateHandler_EmptyHost(t *testing.T) {
 func TestCreateHandler_MultipleURLs(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	urls := []string{
 		"https://google.com",

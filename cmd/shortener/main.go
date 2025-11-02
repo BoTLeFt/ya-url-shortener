@@ -4,18 +4,20 @@ import (
 	"log"
 	"net/http"
 
+	flags "github.com/BoTLeFt/ya-url-shortener/internal/config/flags"
 	"github.com/BoTLeFt/ya-url-shortener/internal/handler"
 	"github.com/BoTLeFt/ya-url-shortener/internal/repository/memory"
 	"github.com/BoTLeFt/ya-url-shortener/internal/service/shortener"
 )
 
 func main() {
+	config := flags.NewConfig()
+	config.ParseFlags()
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := handler.NewRouter(svc)
+	router := handler.NewRouter(svc, config)
 
-	addr := ":8080"
-	if err := http.ListenAndServe(addr, router); err != nil {
+	if err := http.ListenAndServe(config.AddressForGin, router); err != nil {
 		log.Fatal(err)
 	}
 }

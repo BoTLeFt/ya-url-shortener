@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	config "github.com/BoTLeFt/ya-url-shortener/internal/config/flags"
 	"github.com/BoTLeFt/ya-url-shortener/internal/repository/memory"
 	"github.com/BoTLeFt/ya-url-shortener/internal/service/shortener"
 	"github.com/stretchr/testify/assert"
@@ -14,7 +15,9 @@ import (
 func TestRedirectHandler_Success(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	originalURL := "https://yandex.ru"
 	id, err := svc.Shorten(originalURL)
@@ -36,7 +39,9 @@ func TestRedirectHandler_Success(t *testing.T) {
 func TestRedirectHandler_NotFound(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	req, err := http.NewRequest("GET", "/nonexistent123", nil)
 	require.NoError(t, err)
@@ -53,7 +58,9 @@ func TestRedirectHandler_NotFound(t *testing.T) {
 func TestRedirectHandler_InvalidIDFormat(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	testCases := []struct {
 		name   string
@@ -106,7 +113,9 @@ func TestRedirectHandler_InvalidIDFormat(t *testing.T) {
 func TestRedirectHandler_ValidIDNoRedirect(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	req, err := http.NewRequest("GET", "/AbCdEfG", nil)
 	require.NoError(t, err)
@@ -123,7 +132,9 @@ func TestRedirectHandler_ValidIDNoRedirect(t *testing.T) {
 func TestRedirectHandler_PathWithSlash(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	req, err := http.NewRequest("GET", "/some/path", nil)
 	require.NoError(t, err)
@@ -140,7 +151,9 @@ func TestRedirectHandler_PathWithSlash(t *testing.T) {
 func TestRedirectHandler_MultipleRedirects(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	urls := []string{
 		"https://google.com",
@@ -174,7 +187,9 @@ func TestRedirectHandler_MultipleRedirects(t *testing.T) {
 func TestRedirectHandler_WhitespaceInPath(t *testing.T) {
 	repo := memory.New()
 	svc := shortener.New(repo)
-	router := NewRouter(svc)
+	cfg := config.NewConfig()
+	cfg.BaseURL = "http://localhost:8080"
+	router := NewRouter(svc, cfg)
 
 	req, err := http.NewRequest("GET", "/  id  ", nil)
 	require.NoError(t, err)
