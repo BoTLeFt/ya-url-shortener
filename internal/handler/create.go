@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"fmt"
 	"io"
+	"log"
 	"mime"
 	"net/http"
 	"net/url"
@@ -52,14 +52,14 @@ func (h *CreateHandler) Create(c *gin.Context) {
 	id, err := h.svc.Shorten(raw)
 	if err != nil {
 		c.String(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
 	shortURL, err := url.JoinPath(h.cfg.BaseURL, id)
 	if err != nil {
 		c.String(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
