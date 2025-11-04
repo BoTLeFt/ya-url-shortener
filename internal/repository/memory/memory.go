@@ -1,9 +1,13 @@
 package memory
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/BoTLeFt/ya-url-shortener/internal/repository"
+)
 
 type Memory struct {
-	mu sync.RWMutex
+	mu sync.Mutex
 	// id -> originalURL map
 	data map[string]string
 }
@@ -15,13 +19,16 @@ func New() *Memory {
 func (m *Memory) Save(id, original string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	if _, exists := m.data[id]; exists {
+		return repository.ErrIDAlreadyExists
+	}
 	m.data[id] = original
 	return nil
 }
 
 func (m *Memory) Get(id string) (string, bool) {
-	m.mu.RLock()
-	defer m.mu.RUnlock()
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	v, ok := m.data[id]
 	return v, ok
 }

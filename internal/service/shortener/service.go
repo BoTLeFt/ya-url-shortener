@@ -2,6 +2,9 @@ package shortener
 
 import (
 	cryptoRand "crypto/rand"
+	"errors"
+
+	"github.com/BoTLeFt/ya-url-shortener/internal/repository"
 )
 
 // Параметры для генерации ID
@@ -25,18 +28,21 @@ func New(repo Repository) *Service {
 
 // Shorten генерирует уникальный id и сохраняет соответствие между id и original URL
 func (s *Service) Shorten(original string) (string, error) {
-	for { // иттерация пока не получим уникальный id
+	for i := 0; i < 5; i++ { // 5 итераций, если не получили уникальный id, то возвращаем ошибку
 		id, err := generateID()
 		if err != nil {
 			return "", err
 		}
-		if _, exists := s.repo.Get(id); !exists {
-			if err := s.repo.Save(id, original); err != nil {
-				return "", err
+		if err := s.repo.Save(id, original); err != nil {
+			if errors.Is(err, repository.ErrIDAlreadyExists) {
+				// Коллизия id, пробуем сгенерировать другой
+				continue
 			}
-			return id, nil
+			return "", err
 		}
+		return id, nil
 	}
+	return "", errors.New("failed to generate unique id for URL: " + original)
 }
 
 // Resolve возвращает оригинальный URL по id

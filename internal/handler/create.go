@@ -51,11 +51,17 @@ func (h *CreateHandler) Create(c *gin.Context) {
 
 	id, err := h.svc.Shorten(raw)
 	if err != nil {
-		c.String(http.StatusInternalServerError, "internal error")
+		c.String(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		fmt.Println(err.Error())
 		return
 	}
 
-	shortURL := fmt.Sprintf("%s/%s", h.cfg.BaseURL, id)
+	shortURL, err := url.JoinPath(h.cfg.BaseURL, id)
+	if err != nil {
+		c.String(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		fmt.Println(err.Error())
+		return
+	}
 
 	c.Header("Content-Type", "text/plain")
 	c.String(http.StatusCreated, shortURL)
