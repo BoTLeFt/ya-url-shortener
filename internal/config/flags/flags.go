@@ -25,7 +25,7 @@ func (c *Config) ParseFlags() {
 	if envRunAddr := os.Getenv("SERVER_ADDRESS"); envRunAddr != "" {
 		c.AddressForGin = envRunAddr
 	}
-	if envBaseUrl := os.Getenv("BASE_URL"); envBaseUrl != "" {
-		c.BaseURL = envBaseUrl
+	if envBaseURL := os.Getenv("BASE_URL"); envBaseURL != "" {
+		c.BaseURL = envBaseURL
 	}
 }
