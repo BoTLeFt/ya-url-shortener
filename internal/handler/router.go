@@ -24,8 +24,10 @@ func NewRouter(svc *shortener.Service, cfg *config.Config) http.Handler {
 
 	createHandler := NewCreateHandler(svc, cfg)
 	redirectHandler := NewRedirectHandler(svc)
+	shortenHandler := NewShortenHandler(svc, cfg)
 
 	router.POST("/", createHandler.Create)
+	router.POST("/api/shorten", shortenHandler.Shorten)
 	router.GET("/:id", redirectHandler.Redirect)
 
 	return router
