@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"io"
 	"log"
 	"mime"
@@ -31,12 +32,12 @@ func NewShortenHandler(svc *shortener.Service, cfg *config.Config) *ShortenHandl
 
 func (h *ShortenHandler) Shorten(c *gin.Context) {
 	if !isApplicationJSON(c.GetHeader("Content-Type")) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "bad request"})
 		return
 	}
 
 	if c.Request == nil || c.Request.Body == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "bad request"})
 		return
 	}
 	defer c.Request.Body.Close()
@@ -44,32 +45,39 @@ func (h *ShortenHandler) Shorten(c *gin.Context) {
 	c.Request.Body = io.NopCloser(io.LimitReader(c.Request.Body, maxBodyBytes))
 
 	var req ShortenRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+	decoder := json.NewDecoder(c.Request.Body)
+	if err := decoder.Decode(&req); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "bad request"})
 		return
 	}
 
 	if !isValidURL(req.URL) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "bad request"})
 		return
 	}
 
 	id, err := h.svc.Shorten(req.URL)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
 		log.Println(err.Error())
 		return
 	}
 
 	shortURL, err := url.JoinPath(h.cfg.BaseURL, id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": http.StatusText(http.StatusInternalServerError)})
 		log.Println(err.Error())
 		return
 	}
 
+	response := ShortenResponse{Result: shortURL}
 	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusCreated, ShortenResponse{Result: shortURL})
+	c.Status(http.StatusCreated)
+	encoder := json.NewEncoder(c.Writer)
+	if err := encoder.Encode(response); err != nil {
+		log.Println(err.Error())
+		return
+	}
 }
 
 func isApplicationJSON(ct string) bool {
