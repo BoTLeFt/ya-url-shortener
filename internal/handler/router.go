@@ -5,12 +5,15 @@ import (
 	"strings"
 
 	config "github.com/BoTLeFt/ya-url-shortener/internal/config/flags"
+	"github.com/BoTLeFt/ya-url-shortener/internal/logger"
 	"github.com/BoTLeFt/ya-url-shortener/internal/service/shortener"
 	"github.com/gin-gonic/gin"
 )
 
 func NewRouter(svc *shortener.Service, cfg *config.Config) http.Handler {
 	router := gin.Default()
+
+	router.Use(logger.RequestLogger())
 
 	router.NoRoute(func(c *gin.Context) {
 		c.String(http.StatusBadRequest, "bad request")
