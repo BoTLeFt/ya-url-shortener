@@ -17,6 +17,8 @@ func main() {
 	svc := shortener.New(repo)
 	router := handler.NewRouter(svc, config)
 
+	log.Println("AddressForGin: ", config.AddressForGin)
+	log.Println("BaseURL: ", config.BaseURL)
 	if err := http.ListenAndServe(config.AddressForGin, router); err != nil {
 		log.Fatal(err)
 	}
