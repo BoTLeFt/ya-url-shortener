@@ -36,21 +36,21 @@ func main() {
 
 	consumer, err := file.NewConsumer(config.FileStoragePath)
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	producer, err := file.NewProducer(config.FileStoragePath)
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	err = uploadFromFile(consumer, repo)
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	err = consumer.Close()
 	if err != nil {
-		panic("Problem with file")
+		log.Fatal(err.Error())
 	}
 
 	svc := shortener.New(repo)

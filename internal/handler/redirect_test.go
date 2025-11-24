@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -16,7 +17,7 @@ import (
 func TestRedirectHandler_Success(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -44,7 +45,7 @@ func TestRedirectHandler_Success(t *testing.T) {
 func TestRedirectHandler_NotFound(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -67,7 +68,7 @@ func TestRedirectHandler_NotFound(t *testing.T) {
 func TestRedirectHandler_InvalidIDFormat(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -126,7 +127,7 @@ func TestRedirectHandler_InvalidIDFormat(t *testing.T) {
 func TestRedirectHandler_ValidIDNoRedirect(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -149,7 +150,7 @@ func TestRedirectHandler_ValidIDNoRedirect(t *testing.T) {
 func TestRedirectHandler_PathWithSlash(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -172,7 +173,7 @@ func TestRedirectHandler_PathWithSlash(t *testing.T) {
 func TestRedirectHandler_MultipleRedirects(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -212,7 +213,7 @@ func TestRedirectHandler_MultipleRedirects(t *testing.T) {
 func TestRedirectHandler_WhitespaceInPath(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)

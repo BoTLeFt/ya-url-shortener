@@ -2,6 +2,7 @@ package handler
 
 import (
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -18,7 +19,7 @@ import (
 func TestRouter_PostCreate(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -42,7 +43,7 @@ func TestRouter_PostCreate(t *testing.T) {
 func TestRouter_GetRedirect(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -80,7 +81,7 @@ func TestRouter_GetRedirect(t *testing.T) {
 func TestRouter_InvalidMethod(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -122,7 +123,7 @@ func TestRouter_InvalidMethod(t *testing.T) {
 func TestRouter_InvalidPathForRedirect(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -159,7 +160,7 @@ func TestRouter_InvalidPathForRedirect(t *testing.T) {
 func TestRouter_ValidIDPath(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -219,7 +220,7 @@ func TestIsValidIDPath(t *testing.T) {
 func TestRouter_IntegrationFlow(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)

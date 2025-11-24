@@ -8,7 +8,7 @@ import (
 )
 
 type Memory struct {
-	mu sync.Mutex
+	mu sync.RWMutex
 	// id -> originalURL map
 	data map[string]string
 	file file.Producer
@@ -36,8 +36,8 @@ func (m *Memory) Save(id, original string, saveToFile bool) error {
 }
 
 func (m *Memory) Get(id string) (string, bool) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
+	m.mu.RLock()
+	defer m.mu.RUnlock()
 	v, ok := m.data[id]
 	return v, ok
 }

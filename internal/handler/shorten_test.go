@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -20,7 +21,7 @@ import (
 func TestShortenHandler_Success(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -60,7 +61,7 @@ func TestShortenHandler_Success(t *testing.T) {
 func TestShortenHandler_InvalidContentType(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -88,7 +89,7 @@ func TestShortenHandler_InvalidContentType(t *testing.T) {
 func TestShortenHandler_InvalidJSON(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -146,7 +147,7 @@ func TestShortenHandler_InvalidURL(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			producer, err := file.NewProducer("test_file_storage.json")
 			if err != nil {
-				panic("No file")
+				log.Fatal("No file")
 			}
 			repo := memory.New(*producer)
 			svc := shortener.New(repo)
@@ -189,7 +190,7 @@ func TestShortenHandler_InvalidURL(t *testing.T) {
 func TestShortenHandler_LargeBody(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -219,7 +220,7 @@ func TestShortenHandler_LargeBody(t *testing.T) {
 func TestShortenHandler_MultipleURLs(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -269,7 +270,7 @@ func TestShortenHandler_MultipleURLs(t *testing.T) {
 func TestShortenHandler_MissingURLField(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)

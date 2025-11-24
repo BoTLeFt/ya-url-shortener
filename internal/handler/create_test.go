@@ -3,6 +3,7 @@ package handler
 import (
 	"bytes"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -19,7 +20,7 @@ import (
 func TestCreateHandler_Success(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -51,7 +52,7 @@ func TestCreateHandler_Success(t *testing.T) {
 func TestCreateHandler_InvalidContentType(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -109,7 +110,7 @@ func TestCreateHandler_InvalidURL(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			producer, err := file.NewProducer("test_file_storage.json")
 			if err != nil {
-				panic("No file")
+				log.Fatal("No file")
 			}
 			repo := memory.New(*producer)
 			svc := shortener.New(repo)
@@ -139,7 +140,7 @@ func TestCreateHandler_InvalidURL(t *testing.T) {
 func TestCreateHandler_LargeBody(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -166,7 +167,7 @@ func TestCreateHandler_LargeBody(t *testing.T) {
 func TestCreateHandler_EmptyHost(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
@@ -195,7 +196,7 @@ func TestCreateHandler_EmptyHost(t *testing.T) {
 func TestCreateHandler_MultipleURLs(t *testing.T) {
 	producer, err := file.NewProducer("test_file_storage.json")
 	if err != nil {
-		panic("No file")
+		log.Fatal("No file")
 	}
 	repo := memory.New(*producer)
 	svc := shortener.New(repo)
