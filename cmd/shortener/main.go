@@ -44,6 +44,9 @@ func main() {
 	}
 	repo := memory.New(*producer)
 	err = uploadFromFile(consumer, repo)
+	if err != nil {
+		panic(err.Error())
+	}
 
 	err = consumer.Close()
 	if err != nil {
