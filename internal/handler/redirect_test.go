@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	config "github.com/BoTLeFt/ya-url-shortener/internal/config/flags"
+	"github.com/BoTLeFt/ya-url-shortener/internal/repository/file"
 	"github.com/BoTLeFt/ya-url-shortener/internal/repository/memory"
 	"github.com/BoTLeFt/ya-url-shortener/internal/service/shortener"
 	"github.com/stretchr/testify/assert"
@@ -13,7 +14,11 @@ import (
 )
 
 func TestRedirectHandler_Success(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -37,7 +42,11 @@ func TestRedirectHandler_Success(t *testing.T) {
 }
 
 func TestRedirectHandler_NotFound(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -56,7 +65,11 @@ func TestRedirectHandler_NotFound(t *testing.T) {
 }
 
 func TestRedirectHandler_InvalidIDFormat(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -111,7 +124,11 @@ func TestRedirectHandler_InvalidIDFormat(t *testing.T) {
 }
 
 func TestRedirectHandler_ValidIDNoRedirect(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -130,7 +147,11 @@ func TestRedirectHandler_ValidIDNoRedirect(t *testing.T) {
 }
 
 func TestRedirectHandler_PathWithSlash(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -149,7 +170,11 @@ func TestRedirectHandler_PathWithSlash(t *testing.T) {
 }
 
 func TestRedirectHandler_MultipleRedirects(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -185,7 +210,11 @@ func TestRedirectHandler_MultipleRedirects(t *testing.T) {
 }
 
 func TestRedirectHandler_WhitespaceInPath(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"

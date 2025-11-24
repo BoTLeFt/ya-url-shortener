@@ -7,9 +7,24 @@ import (
 	flags "github.com/BoTLeFt/ya-url-shortener/internal/config/flags"
 	"github.com/BoTLeFt/ya-url-shortener/internal/handler"
 	"github.com/BoTLeFt/ya-url-shortener/internal/logger"
+	"github.com/BoTLeFt/ya-url-shortener/internal/repository/file"
 	"github.com/BoTLeFt/ya-url-shortener/internal/repository/memory"
 	"github.com/BoTLeFt/ya-url-shortener/internal/service/shortener"
 )
+
+func uploadFromFile(consumer *file.Consumer, memory *memory.Memory) error {
+	for {
+		var event *file.ShortenedURL
+		event, err := consumer.ReadEvent()
+		if err != nil {
+			return err
+		}
+		if event == nil {
+			return nil
+		}
+		memory.Save(event.ShortURL, event.OriginalURL, false)
+	}
+}
 
 func main() {
 	if err := logger.Initialize("info"); err != nil {
@@ -18,7 +33,23 @@ func main() {
 
 	config := flags.NewConfig()
 	config.ParseFlags()
-	repo := memory.New()
+
+	consumer, err := file.NewConsumer(config.FileStoragePath)
+	if err != nil {
+		panic("No file")
+	}
+	producer, err := file.NewProducer(config.FileStoragePath)
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
+	err = uploadFromFile(consumer, repo)
+
+	err = consumer.Close()
+	if err != nil {
+		panic("Problem with file")
+	}
+
 	svc := shortener.New(repo)
 	router := handler.NewRouter(svc, config)
 

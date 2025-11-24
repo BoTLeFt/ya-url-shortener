@@ -14,7 +14,7 @@ const (
 )
 
 type Repository interface {
-	Save(id, original string) error
+	Save(id, original string, saveToFile bool) error
 	Get(id string) (string, bool)
 }
 
@@ -33,7 +33,7 @@ func (s *Service) Shorten(original string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if err := s.repo.Save(id, original); err != nil {
+		if err := s.repo.Save(id, original, true); err != nil {
 			if errors.Is(err, repository.ErrIDAlreadyExists) {
 				// Коллизия id, пробуем сгенерировать другой
 				continue

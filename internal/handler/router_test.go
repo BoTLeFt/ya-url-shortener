@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	config "github.com/BoTLeFt/ya-url-shortener/internal/config/flags"
+	"github.com/BoTLeFt/ya-url-shortener/internal/repository/file"
 	"github.com/BoTLeFt/ya-url-shortener/internal/repository/memory"
 	"github.com/BoTLeFt/ya-url-shortener/internal/service/shortener"
 	"github.com/stretchr/testify/assert"
@@ -15,7 +16,11 @@ import (
 )
 
 func TestRouter_PostCreate(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -35,7 +40,11 @@ func TestRouter_PostCreate(t *testing.T) {
 }
 
 func TestRouter_GetRedirect(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -69,7 +78,11 @@ func TestRouter_GetRedirect(t *testing.T) {
 }
 
 func TestRouter_InvalidMethod(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -107,7 +120,11 @@ func TestRouter_InvalidMethod(t *testing.T) {
 }
 
 func TestRouter_InvalidPathForRedirect(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -140,7 +157,11 @@ func TestRouter_InvalidPathForRedirect(t *testing.T) {
 }
 
 func TestRouter_ValidIDPath(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -196,7 +217,11 @@ func TestIsValidIDPath(t *testing.T) {
 }
 
 func TestRouter_IntegrationFlow(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://yandex.ru"

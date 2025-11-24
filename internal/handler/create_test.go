@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	config "github.com/BoTLeFt/ya-url-shortener/internal/config/flags"
+	"github.com/BoTLeFt/ya-url-shortener/internal/repository/file"
 	"github.com/BoTLeFt/ya-url-shortener/internal/repository/memory"
 	"github.com/BoTLeFt/ya-url-shortener/internal/service/shortener"
 	"github.com/stretchr/testify/assert"
@@ -16,7 +17,11 @@ import (
 )
 
 func TestCreateHandler_Success(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -44,7 +49,11 @@ func TestCreateHandler_Success(t *testing.T) {
 }
 
 func TestCreateHandler_InvalidContentType(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -98,7 +107,11 @@ func TestCreateHandler_InvalidURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			repo := memory.New()
+			producer, err := file.NewProducer("test_file_storage.json")
+			if err != nil {
+				panic("No file")
+			}
+			repo := memory.New(*producer)
 			svc := shortener.New(repo)
 			cfg := config.NewConfig()
 			cfg.BaseURL = "http://localhost:8080"
@@ -124,7 +137,11 @@ func TestCreateHandler_InvalidURL(t *testing.T) {
 }
 
 func TestCreateHandler_LargeBody(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -147,7 +164,11 @@ func TestCreateHandler_LargeBody(t *testing.T) {
 }
 
 func TestCreateHandler_EmptyHost(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
@@ -172,7 +193,11 @@ func TestCreateHandler_EmptyHost(t *testing.T) {
 }
 
 func TestCreateHandler_MultipleURLs(t *testing.T) {
-	repo := memory.New()
+	producer, err := file.NewProducer("test_file_storage.json")
+	if err != nil {
+		panic("No file")
+	}
+	repo := memory.New(*producer)
 	svc := shortener.New(repo)
 	cfg := config.NewConfig()
 	cfg.BaseURL = "http://localhost:8080"
